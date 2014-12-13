@@ -103,16 +103,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     UIView* window = ([UIApplication sharedApplication].delegate).window;
     EAGLContext *eaglContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
-    
-    //GLKView *videoPreviewView =[[GLKView alloc] initWithFrame:window.bounds context:eaglContext];
-    //videoPreviewView.enableSetNeedsDisplay = NO;
-    
-    // because the native video image from the back camera is in UIDeviceOrientationLandscapeLeft (i.e. the home button is on the right), we need to apply a clockwise 90 degree transform so that we can draw the video preview as if we were in a landscape-oriented view; if you're using the front camera and you want to have a mirrored preview (so that the user is seeing themselves in the mirror), you need to apply an additional horizontal flip (by concatenating CGAffineTransformMakeScale(-1.0, 1.0) to the rotation transform)
-    //CGAffineTransform transform = CGAffineTransformMakeRotation(M_PI_2);
-    //transform = CGAffineTransformConcat(transform, CGAffineTransformMakeScale(-1.0, 1.0));
-    
-    //videoPreviewView.transform = transform;
-    //videoPreviewView.frame = window.bounds;
 
     CIContext* ci_context = [CIContext contextWithEAGLContext:eaglContext options:@{kCIContextWorkingColorSpace : [NSNull null]} ];
     
@@ -155,20 +145,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     NSArray *features = [face_detector featuresInImage:[CIImage imageWithCGImage:image.CGImage]
                                               options:@{ CIDetectorEyeBlink : @YES,
                                                          CIDetectorImageOrientation :[NSNumber numberWithInt:orientation] }];
-    
-    /*NSDictionary *opts = [NSDictionary dictionaryWithObjectsAndKeys:
-                          CIDetectorImageOrientation,
-                          [self ciOrientationFromDeviceOrientation:[UIApplication sharedApplication].statusBarOrientation],
-                          [NSNumber numberWithBool:YES],
-                          CIDetectorEyeBlink,
-                          [NSNumber numberWithBool:YES],
-                          CIDetectorSmile,
-                          nil];*/
-    
-    //CIDetector *detector = [CIDetector detectorOfType:CIDetectorTypeFace context:ci_context options:opts];
-    
-    
-    //NSArray* features = [face_detector featuresInImage:image.CIImage options:opts];
     
     for (CIFaceFeature *f in features)
     {
@@ -237,30 +213,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     CGImageRelease(quartzImage);
     
     return (image);
-}
-
-
-// eric's function
--(NSNumber *)ciOrientationFromDeviceOrientation:(UIInterfaceOrientation)interfaceOrientation{
-    NSNumber *ciOrientation = @1;
-    
-    if(interfaceOrientation == UIInterfaceOrientationPortrait){
-        ciOrientation = @5;
-    }
-    else if(interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown){
-        ciOrientation = @7;
-    }
-    else if(interfaceOrientation == UIInterfaceOrientationLandscapeLeft){
-        ciOrientation = @1;
-    }
-    else if(interfaceOrientation == UIInterfaceOrientationLandscapeRight){
-        ciOrientation = @3;
-    }
-    else{
-        //unknown orientation!
-    }
-    
-    return ciOrientation;
 }
 
 
