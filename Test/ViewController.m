@@ -95,13 +95,13 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
        fromConnection:(AVCaptureConnection *)connection
 {
     // Create a UIImage from the sample buffer data
-    UIImage *image = [self imageFromSampleBuffer:sampleBuffer];
+    self.image = [self imageFromSampleBuffer:sampleBuffer];
     
-    image = [UIImage imageWithCGImage:image.CGImage scale:image.scale orientation:UIImageOrientationDown];
+    self.image = [UIImage imageWithCGImage:self.image.CGImage scale:self.image.scale orientation:UIImageOrientationDown];
     
     int orientation = 1;
     
-    switch (image.imageOrientation) {
+    switch (self.image.imageOrientation) {
         case UIImageOrientationUp:
             orientation = 1;
             break;
@@ -130,19 +130,22 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             break;
     }
     
-    NSDictionary *detectorOptions = @{ CIDetectorAccuracy : CIDetectorAccuracyHigh };
-    CIDetector *face_detector = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:detectorOptions];
+    if (self.detectorOptions == nil)
+    {
+        self.detectorOptions = @{ CIDetectorAccuracy : CIDetectorAccuracyHigh };
+        self.face_detector = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:self.detectorOptions];
+    }
     
-    NSArray *features = [face_detector featuresInImage:[CIImage imageWithCGImage:image.CGImage]
+    self.features = [self.face_detector featuresInImage:[CIImage imageWithCGImage:self.image.CGImage]
                                               options:@{ CIDetectorEyeBlink : @YES,
                                                          CIDetectorImageOrientation :[NSNumber numberWithInt:orientation] }];
     
-    for (CIFaceFeature *f in features)
+    for (CIFaceFeature *f in self.features)
     {
-        NSLog(@"Features not empty");
         if (f.leftEyeClosed && f.rightEyeClosed)
         {
             self._eyes = true;
+            self._count++;
             
             if (self._count > 2)
                 NSLog(@"Eyes are closed");
@@ -157,7 +160,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.image_view setImage:image];
+        [self.image_view setImage:self.image];
         
     });
     

@@ -14,6 +14,10 @@
 @interface ViewController : UIViewController 
 
 @property (weak, nonatomic) IBOutlet UIImageView *image_view;
+@property NSDictionary *detectorOptions;
+@property CIDetector *face_detector;
+@property NSArray *features;
+@property UIImage *image;
 @property bool _eyes;
 @property int _count;
 @end
