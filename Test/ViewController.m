@@ -99,15 +99,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     image = [UIImage imageWithCGImage:image.CGImage scale:image.scale orientation:UIImageOrientationDown];
     
-    //////////////////////
-    
-    UIView* window = ([UIApplication sharedApplication].delegate).window;
-    EAGLContext *eaglContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
-
-    CIContext* ci_context = [CIContext contextWithEAGLContext:eaglContext options:@{kCIContextWorkingColorSpace : [NSNull null]} ];
-    
-    //////////////////////
-    
     int orientation = 1;
     
     switch (image.imageOrientation) {
